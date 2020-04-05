@@ -1,0 +1,19 @@
+color
+=====
+    edit colors
+
+usage
+-----
+    * program
+        $ ./make.sh
+        $ bin/color
+    * documentation
+        $ cd doc
+        $ ./make.sh
+        $ man ./color.1.gz
+
+depends on
+----------
+    * bash
+    * docutils
+    * gcc
