@@ -113,7 +113,7 @@ main(int argc, char **argv)
 
     int arg;
 
-    while ((arg = getopt(argc, argv, ":r:g:b:a:")) != -1) {
+    while ((arg = getopt(argc, argv, ":r:g:b:a:")) != -1)
         switch (arg) {
             case 'r' : r = 1; r_num = get_num(optarg); break;
             case 'g' : g = 1; g_num = get_num(optarg); break;
@@ -132,7 +132,6 @@ main(int argc, char **argv)
                 break;
             default  : usage(argv[0]);
         }
-    }
 
     unsigned *rgb;
 
