@@ -79,22 +79,15 @@ get_hex(unsigned *array)
     return res;
 }
 
-static void
-make_valid(unsigned *value, long offset)
+static unsigned
+make_valid(unsigned value, long offset)
 {
-    long tmp = (long)*value + offset;
+    long tmp = (long)value + offset;
 
-    if (tmp < 0) {
-        *value = 0;
-        return;
-    }
+    if (tmp <   0) return   0;
+    if (tmp > 255) return 255;
 
-    if (tmp > 255) {
-        *value = 255;
-        return;
-    }
-
-    *value = tmp;
+    return tmp;
 }
 
 static void
@@ -167,9 +160,9 @@ main(int argc, char **argv)
         rgb = get_rgb(input);
     }
 
-    if (r == 1) make_valid(&rgb[0], r_num);
-    if (g == 1) make_valid(&rgb[1], g_num);
-    if (b == 1) make_valid(&rgb[2], b_num);
+    if (r == 1) rgb[0] = make_valid(rgb[0], r_num);
+    if (g == 1) rgb[1] = make_valid(rgb[1], g_num);
+    if (b == 1) rgb[2] = make_valid(rgb[2], b_num);
 
     print_color(rgb);
 
