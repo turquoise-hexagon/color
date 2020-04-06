@@ -97,6 +97,25 @@ make_valid(unsigned *value, long offset)
     *value = tmp;
 }
 
+static void
+print_color(unsigned *array)
+{
+    char *tmp = get_hex(array);
+
+    if (isatty(fileno(stdout)) == 1)
+        printf(
+            "\033[48;2;%u;%u;%um    \033[m %s\n",
+            array[0],
+            array[1],
+            array[2],
+            tmp
+        );
+    else
+        printf("%s\n", tmp);
+
+    free(tmp);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -152,11 +171,8 @@ main(int argc, char **argv)
     if (g == 1) make_valid(&rgb[1], g_num);
     if (b == 1) make_valid(&rgb[2], b_num);
 
-    char *str = get_hex(rgb);
+    print_color(rgb);
 
-    puts(str);
-
-    free(str);
     free(rgb);
 
     return EXIT_SUCCESS;
