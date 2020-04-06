@@ -115,19 +115,19 @@ main(int argc, char **argv)
 
     while ((arg = getopt(argc, argv, ":r:g:b:a:")) != -1)
         switch (arg) {
-            case 'r' : r = 1; r_num = get_num(optarg); break;
-            case 'g' : g = 1; g_num = get_num(optarg); break;
-            case 'b' : b = 1; b_num = get_num(optarg); break;
+            case 'r' : r = 1; r_num += get_num(optarg); break;
+            case 'g' : g = 1; g_num += get_num(optarg); break;
+            case 'b' : b = 1; b_num += get_num(optarg); break;
             case 'a' :
                 r = 1;
                 g = 1;
                 b = 1;
 
-                const long num = get_num(optarg);
+                const long tmp = get_num(optarg);
 
-                r_num = num;
-                g_num = num;
-                b_num = num;
+                r_num += tmp;
+                g_num += tmp;
+                b_num += tmp;
 
                 break;
             default  : usage(argv[0]);
