@@ -115,10 +115,6 @@ main(int argc, char **argv)
     if (argc < 2)
         usage(argv[0]);
 
-    bool r = 0;
-    bool g = 0;
-    bool b = 0;
-
     long r_num = 0;
     long g_num = 0;
     long b_num = 0;
@@ -127,14 +123,10 @@ main(int argc, char **argv)
 
     while ((arg = getopt(argc, argv, ":r:g:b:a:")) != -1)
         switch (arg) {
-            case 'r' : r = 1; r_num += get_num(optarg); break;
-            case 'g' : g = 1; g_num += get_num(optarg); break;
-            case 'b' : b = 1; b_num += get_num(optarg); break;
-            case 'a' :
-                r = 1;
-                g = 1;
-                b = 1;
-
+            case 'r' : r_num += get_num(optarg); break;
+            case 'g' : g_num += get_num(optarg); break;
+            case 'b' : b_num += get_num(optarg); break;
+            case 'a' :;
                 const long tmp = get_num(optarg);
 
                 r_num += tmp;
@@ -160,9 +152,9 @@ main(int argc, char **argv)
         rgb = get_rgb(input);
     }
 
-    if (r == 1) rgb[0] = make_valid(rgb[0], r_num);
-    if (g == 1) rgb[1] = make_valid(rgb[1], g_num);
-    if (b == 1) rgb[2] = make_valid(rgb[2], b_num);
+    rgb[0] = make_valid(rgb[0], r_num);
+    rgb[1] = make_valid(rgb[1], g_num);
+    rgb[2] = make_valid(rgb[2], b_num);
 
     print_color(rgb);
 
