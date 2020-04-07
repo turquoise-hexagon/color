@@ -39,7 +39,6 @@ get_num(char *str)
     return tmp;
 }
 
-//static unsigned *
 static void
 get_rgb(char *str, unsigned *array)
 {
@@ -52,7 +51,6 @@ get_rgb(char *str, unsigned *array)
     for (unsigned short i = 1; i < 7; i += 2) {
         char tmp[2] = {str[i], str[i + 1]};
 
-        //res[(i - 1) / 2] = strtol(tmp, &ptr, 16);
         array[(i - 1) / 2] = strtol(tmp, &ptr, 16);
 
         if (errno != 0 || *ptr != 0)
