@@ -39,16 +39,12 @@ get_num(char *str)
     return tmp;
 }
 
-static unsigned *
-get_rgb(char *str)
+//static unsigned *
+static void
+get_rgb(char *str, unsigned *array)
 {
     if (strnlen(str, LINE_MAX) != 7 || str[0] != '#')
         errx(EXIT_FAILURE, "'%s' isn't a valid hex value", str);
-
-    unsigned *res = malloc(3 * sizeof *res);
-
-    if (res == NULL)
-        errx(EXIT_FAILURE, "failed to allocate memory");
 
     errno = 0;
     char *ptr;
@@ -56,57 +52,42 @@ get_rgb(char *str)
     for (unsigned short i = 1; i < 7; i += 2) {
         char tmp[2] = {str[i], str[i + 1]};
 
-        res[(i - 1) / 2] = strtol(tmp, &ptr, 16);
+        //res[(i - 1) / 2] = strtol(tmp, &ptr, 16);
+        array[(i - 1) / 2] = strtol(tmp, &ptr, 16);
 
         if (errno != 0 || *ptr != 0)
             errx(EXIT_FAILURE, "'%s' isn't a valid hex value", str);
     }
-
-    return res;
 }
 
-static char *
-get_hex(unsigned *array)
+static void
+make_valid(unsigned *value, long offset)
 {
-    char *res = malloc(8 * sizeof *res);
+    long tmp = (long)*value + offset;
 
-    if (res == NULL)
-        errx(EXIT_FAILURE, "failed to allocate memory");
+    if      (tmp   < 0) tmp =   0;
+    else if (tmp > 255) tmp = 255;
 
-    if (snprintf(res, 8, "#%02X%02X%02X", array[0], array[1], array[2]) < 0)
-        errx(EXIT_FAILURE, "failed to convert value");
-
-    return res;
-}
-
-static unsigned
-make_valid(unsigned value, long offset)
-{
-    long tmp = (long)value + offset;
-
-    if (tmp <   0) return   0;
-    if (tmp > 255) return 255;
-
-    return tmp;
+    *value = tmp;
 }
 
 static void
 print_color(unsigned *array)
 {
-    char *tmp = get_hex(array);
-
     if (isatty(fileno(stdout)) == 1)
         printf(
-            "\033[48;2;%u;%u;%um    \033[m %s\n",
+            "\033[48;2;%u;%u;%um    \033[m ",
             array[0],
             array[1],
-            array[2],
-            tmp
+            array[2]
         );
-    else
-        printf("%s\n", tmp);
 
-    free(tmp);
+    printf(
+        "#%02X%02X%02X\n",
+        array[0],
+        array[1],
+        array[2]
+    );
 }
 
 int
@@ -137,10 +118,10 @@ main(int argc, char **argv)
             default  : usage(argv[0]);
         }
 
-    unsigned *rgb;
+    unsigned rgb[3];
 
     if (optind < argc)
-        rgb = get_rgb(argv[optind]);
+        get_rgb(argv[optind], rgb);
     else {
         char input[LINE_MAX];
 
@@ -149,16 +130,14 @@ main(int argc, char **argv)
 
         input[strnlen(input, LINE_MAX) - 1] = 0;
 
-        rgb = get_rgb(input);
+        get_rgb(input, rgb);
     }
 
-    rgb[0] = make_valid(rgb[0], r_num);
-    rgb[1] = make_valid(rgb[1], g_num);
-    rgb[2] = make_valid(rgb[2], b_num);
+    make_valid(&rgb[0], r_num);
+    make_valid(&rgb[1], g_num);
+    make_valid(&rgb[2], b_num);
 
     print_color(rgb);
-
-    free(rgb);
 
     return EXIT_SUCCESS;
 }
