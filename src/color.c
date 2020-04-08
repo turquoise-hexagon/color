@@ -10,14 +10,14 @@
 static void
 usage(char *name)
 {
-    fprintf(
+    fprintf (
         stderr,
         "usage : %s [option] <parameters>\n\n"
-        "options :\n"
-        "    -r <amount> <hex>    modify red value of <hex> by <amount>\n"
-        "    -g <amount> <hex>    modify green value of <hex> by <amount>\n"
-        "    -b <amount> <hex>    modify blue value of <hex> by <amount>\n"
-        "    -a <amount> <hex>    modify all values of <hex> by <amount>\n",
+        "options : \n"
+        "    -r <amount> <string w/ hex>    modify red value of hex in <string> by <amount>\n"
+        "    -g <amount> <string w/ hex>    modify green value of hex in <string> by <amount>\n"
+        "    -b <amount> <string w/ hex>    modify blue value of hex in <string> by <amount>\n"
+        "    -a <amount> <string w/ hex>    modify all values of hex in <string> by <amount>\n",
         basename(name)
     );
 
@@ -33,28 +33,27 @@ get_num(char *str)
     long tmp = strtol(str, &ptr, 10);
 
     if (errno != 0 || *ptr != 0)
-        errx(EXIT_FAILURE, "'%s' isn't a valid numeric value", str);
+        errx(EXIT_FAILURE, "'%s' isn't a valid amount", str);
 
     return tmp;
 }
 
-static void
-get_rgb(char *str, unsigned *array)
+static unsigned short
+get_rgb(char *str, unsigned rgb[3])
 {
-    if (strnlen(str, LINE_MAX) != 7 || str[0] != '#')
-        errx(EXIT_FAILURE, "'%s' isn't a valid hex value", str);
-
     errno = 0;
     char *ptr;
 
-    for (unsigned short i = 1; i < 7; i += 2) {
-        char tmp[2] = {str[i], str[i + 1]};
+    for (size_t i = 0; i < 6; i += 2) {
+        char tmp[3] = {str[i], str[i + 1], 0};
 
-        array[(i - 1) / 2] = strtol(tmp, &ptr, 16);
+        rgb[i / 2] = strtoul(tmp, &ptr, 16);
 
         if (errno != 0 || *ptr != 0)
-            errx(EXIT_FAILURE, "'%s' isn't a valid hex value", str);
+            return 0;
     }
+
+    return 1;
 }
 
 static void
@@ -62,79 +61,68 @@ make_valid(unsigned *value, long offset)
 {
     long tmp = (long)*value + offset;
 
-    if      (tmp   < 0) tmp =   0;
+    if      (tmp <   0) tmp =   0;
     else if (tmp > 255) tmp = 255;
 
     *value = tmp;
 }
 
 static void
-print_color(unsigned *array)
+color(char *str, long num[3])
 {
-    if (isatty(fileno(stdout)) == 1)
-        printf(
-            "\033[48;2;%u;%u;%um    \033[m ",
-            array[0],
-            array[1],
-            array[2]
-        );
+    unsigned rgb[3];
 
-    printf(
-        "#%02X%02X%02X\n",
-        array[0],
-        array[1],
-        array[2]
-    );
+    size_t len = strnlen(str, LINE_MAX);
+
+    for (size_t i = 0; i < len; ++i) {
+        putchar(str[i]);
+
+        if (str[i] == '#' && i + 6 < len && get_rgb(str + i + 1, rgb) == 1) {
+            for (unsigned short j = 0; j < 3; ++j)
+                make_valid(&rgb[j], num[j]);
+
+            printf("%02X%02X%02X", rgb[0], rgb[1], rgb[2]);
+
+            i += 6;
+        }
+    }
+
+    putchar('\n');
 }
 
 int
 main(int argc, char **argv)
 {
-    if (argc < 2)
-        usage(argv[0]);
+    long tmp;
+    long num[3] = {0};
 
-    long r_num = 0;
-    long g_num = 0;
-    long b_num = 0;
-
-    int arg;
-
-    while ((arg = getopt(argc, argv, ":r:g:b:a:")) != -1)
+    for (int arg; (arg = getopt(argc, argv, ":r:g:b:a:")) != -1;)
         switch (arg) {
-            case 'r' : r_num += get_num(optarg); break;
-            case 'g' : g_num += get_num(optarg); break;
-            case 'b' : b_num += get_num(optarg); break;
-            case 'a' :;
-                const long tmp = get_num(optarg);
+            case 'r' : num[0] += get_num(optarg); break;
+            case 'b' : num[1] += get_num(optarg); break;
+            case 'g' : num[2] += get_num(optarg); break;
+            case 'a' :
+                tmp = get_num(optarg);
 
-                r_num += tmp;
-                g_num += tmp;
-                b_num += tmp;
+                for (unsigned short i = 0; i < 3; ++i)
+                    num[i] += tmp;
 
                 break;
-            default  : usage(argv[0]);
+            default : usage(argv[0]);
         }
 
-    unsigned rgb[3];
-
     if (optind < argc)
-        get_rgb(argv[optind], rgb);
+        for (unsigned i = optind; i < (unsigned)argc; ++i)
+            color(argv[i], num);
     else {
         char input[LINE_MAX];
 
-        if (fgets(input, LINE_MAX, stdin) == NULL)
-            errx(EXIT_FAILURE, "failed to read from stdin");
+        while (fgets(input, LINE_MAX, stdin) != NULL) {
+            input[strnlen(input, LINE_MAX) - 1] = 0;
 
-        input[strnlen(input, LINE_MAX) - 1] = 0;
-
-        get_rgb(input, rgb);
+            color(input, num);
+        }
     }
-
-    make_valid(&rgb[0], r_num);
-    make_valid(&rgb[1], g_num);
-    make_valid(&rgb[2], b_num);
-
-    print_color(rgb);
 
     return EXIT_SUCCESS;
 }

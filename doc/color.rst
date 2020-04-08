@@ -22,14 +22,14 @@ it allows for changing rgb values & overall brightness
 
 options
 -------
-``-r <amount> <hex>``
-    modify red value of <hex> by <amount>
-``-g <amount> <hex>``
-    modify green value of <hex> by <amount>
-``-b <amount> <hex>``
-    modify blue value of <hex> by <amount>
-``-a <amount> <hex>``
-    modify all values of <hex> by <amount>
+``-r <amount> <string w/ hex>``
+    modify red value of hex in <string> by <amount>
+``-g <amount> <string w/ hex>``
+    modify green value of hex in <string> by <amount>
+``-b <amount> <string w/ hex>``
+    modify blue value of hex in <string> by <amount>
+``-a <amount> <string w/ hex>``
+    modify all values of hex in <string> by <amount>
 
 example
 -------
