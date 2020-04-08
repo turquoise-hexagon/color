@@ -99,8 +99,8 @@ main(int argc, char **argv)
     for (int arg; (arg = getopt(argc, argv, ":r:g:b:a:")) != -1;)
         switch (arg) {
             case 'r' : num[0] += get_num(optarg); break;
-            case 'b' : num[1] += get_num(optarg); break;
-            case 'g' : num[2] += get_num(optarg); break;
+            case 'g' : num[1] += get_num(optarg); break;
+            case 'b' : num[2] += get_num(optarg); break;
             case 'a' :
                 tmp = get_num(optarg);
 
