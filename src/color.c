@@ -93,6 +93,9 @@ color(char *str, long num[3])
 int
 main(int argc, char **argv)
 {
+    if (argc == 1)
+        usage(argv[0]);
+
     long tmp;
     long num[3] = {0};
 
