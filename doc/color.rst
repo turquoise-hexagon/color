@@ -22,13 +22,13 @@ it allows for changing rgb values & overall brightness
 
 options
 -------
-``-r <amount> <color>``
+``-r <amount> <hex>``
     modify red value of <hex> by <amount>
-``-g <amount> <color>``
+``-g <amount> <hex>``
     modify green value of <hex> by <amount>
-``-b <amount> <color>``
+``-b <amount> <hex>``
     modify blue value of <hex> by <amount>
-``-a <amount> <color>``
+``-a <amount> <hex>``
     modify all values of <hex> by <amount>
 
 example

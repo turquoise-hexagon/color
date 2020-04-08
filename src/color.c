@@ -14,10 +14,10 @@ usage(char *name)
         stderr,
         "usage : %s [option] <parameters>\n"
         "options :\n\n"
-        "    -r <amount> <color>    modify red value of <hex> by <amount>\n"
-        "    -g <amount> <color>    modify green value of <hex> by <amount>\n"
-        "    -b <amount> <color>    modify blue value of <hex> by <amount>\n"
-        "    -a <amount> <color>    modify all values of <hex> by <amount>\n",
+        "    -r <amount> <hex>    modify red value of <hex> by <amount>\n"
+        "    -g <amount> <hex>    modify green value of <hex> by <amount>\n"
+        "    -b <amount> <hex>    modify blue value of <hex> by <amount>\n"
+        "    -a <amount> <hex>    modify all values of <hex> by <amount>\n",
         basename(name)
     );
 
