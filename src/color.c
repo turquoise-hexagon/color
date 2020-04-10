@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <libgen.h>
 #include <limits.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,14 +11,14 @@
 static void
 usage(char *name)
 {
-    fprintf (
+    fprintf(
         stderr,
         "usage : %s [option] <parameters>\n\n"
-        "options : \n"
-        "    -r <amount> <string w/ hex>    modify red value of hex in <string> by <amount>\n"
-        "    -g <amount> <string w/ hex>    modify green value of hex in <string> by <amount>\n"
-        "    -b <amount> <string w/ hex>    modify blue value of hex in <string> by <amount>\n"
-        "    -a <amount> <string w/ hex>    modify all values of hex in <string> by <amount>\n",
+        "options :\n"
+        "    -r <amount> <string w/ hex>    change red value of <hex> by <amount>\n"
+        "    -g <amount> <string w/ hex>    change green value of <hex> by <amount>\n"
+        "    -b <amount> <string w/ hex>    change blue value of <hex> by <amount>\n"
+        "    -a <amount> <string w/ hex>    change overall value of <hex> by <amount>\n",
         basename(name)
     );
 
@@ -44,14 +45,14 @@ get_rgb(char *str, unsigned rgb[3])
     errno = 0;
     char *ptr;
 
-    for (size_t i = 0; i < 6; i += 2) {
-        char tmp[3] = {str[i], str[i + 1], 0};
+    uint32_t tmp = strtoul(str, &ptr, 16);
+    
+    if (errno != 0 || *ptr != 0)
+        return 0;
 
-        rgb[i / 2] = strtoul(tmp, &ptr, 16);
-
-        if (errno != 0 || *ptr != 0)
-            return 0;
-    }
+    rgb[0] = (tmp >> 16) & 0xFF;
+    rgb[1] = (tmp >>  8) & 0xFF;
+    rgb[2] = (tmp >>  0) & 0xFF;
 
     return 1;
 }
@@ -61,8 +62,8 @@ make_valid(unsigned *value, long offset)
 {
     long tmp = (long)*value + offset;
 
-    if      (tmp <   0) tmp =   0;
-    else if (tmp > 255) tmp = 255;
+    if (tmp <   0) tmp =   0;
+    if (tmp > 255) tmp = 255;
 
     *value = tmp;
 }
@@ -71,15 +72,23 @@ static void
 color(char *str, long num[3])
 {
     unsigned rgb[3];
+    char tmp[7] = {0};
 
     size_t len = strnlen(str, LINE_MAX);
 
     for (size_t i = 0; i < len; ++i) {
         putchar(str[i]);
 
-        if (str[i] == '#' && i + 6 < len && get_rgb(str + i + 1, rgb) == 1) {
-            for (unsigned short j = 0; j < 3; ++j)
-                make_valid(&rgb[j], num[j]);
+        if (str[i] == '#' && i + 6 < len) {
+            for (unsigned short j = 0; j < 6; ++j)
+                tmp[j] = str[i + j + 1];
+
+            if (get_rgb(tmp, rgb) != 1)
+                continue;
+
+            make_valid(&rgb[0], num[0]);
+            make_valid(&rgb[1], num[1]);
+            make_valid(&rgb[2], num[2]);
 
             printf("%02X%02X%02X", rgb[0], rgb[1], rgb[2]);
 
@@ -107,8 +116,9 @@ main(int argc, char **argv)
             case 'a' :
                 tmp = get_num(optarg);
 
-                for (unsigned short i = 0; i < 3; ++i)
-                    num[i] += tmp;
+                num[0] += tmp;
+                num[1] += tmp;
+                num[2] += tmp;
 
                 break;
             default : usage(argv[0]);
