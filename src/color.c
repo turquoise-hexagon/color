@@ -26,21 +26,21 @@ usage(char *name)
 }
 
 static long
-get_num(char *str)
+get_num(const char *str)
 {
     errno = 0;
     char *ptr;
 
-    long tmp = strtol(str, &ptr, 10);
+    long num = strtol(str, &ptr, 10);
 
     if (errno != 0 || *ptr != 0)
         errx(EXIT_FAILURE, "'%s' isn't a valid amount", str);
 
-    return tmp;
+    return num;
 }
 
 static unsigned short
-get_rgb(char *str, unsigned rgb[3])
+get_rgb(const char *str, unsigned rgb[3])
 {
     errno = 0;
     char *ptr;
@@ -69,7 +69,7 @@ make_valid(unsigned *value, long offset)
 }
 
 static void
-color(char *str, long num[3])
+color(const char *str, const long num[3])
 {
     unsigned rgb[3];
     char tmp[7] = {0};
