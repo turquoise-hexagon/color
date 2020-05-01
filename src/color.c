@@ -46,7 +46,7 @@ get_rgb(const char *str, unsigned rgb[3])
     char *ptr;
 
     uint32_t tmp = strtoul(str, &ptr, 16);
-    
+
     if (errno != 0 || *ptr != 0)
         return 0;
 
