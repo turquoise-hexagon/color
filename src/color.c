@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <libgen.h>
 #include <limits.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,38 +10,38 @@
 #include <unistd.h>
 
 static void
-usage(char *name)
+print_usage(char *program_name)
 {
     fprintf(
         stderr,
         "usage : %s [option] <parameters>\n\n"
         "options :\n"
-        "    -r <amount> <string w/ hex>    change red value of <hex> by <amount>\n"
-        "    -g <amount> <string w/ hex>    change green value of <hex> by <amount>\n"
-        "    -b <amount> <string w/ hex>    change blue value of <hex> by <amount>\n"
-        "    -a <amount> <string w/ hex>    change overall value of <hex> by <amount>\n",
-        basename(name)
+        "    -r <amount> <string>    change red value of all hex colors in <string> by <amount>\n"
+        "    -g <amount> <string>    change green value of all hex colors in <string> by <amount>\n"
+        "    -b <amount> <string>    change blue value of all hex colors in <string> by <amount>\n"
+        "    -a <amount> <string>    change overall value of all hex colors in <string> by <amount>\n",
+        basename(program_name)
     );
 
     exit(EXIT_FAILURE);
 }
 
 static long
-get_num(const char *str)
+convert_to_number(const char *str)
 {
     errno = 0;
     char *ptr;
 
-    long num = strtol(str, &ptr, 10);
+    long number = strtol(str, &ptr, 10);
 
     if (errno != 0 || *ptr != 0)
         errx(EXIT_FAILURE, "'%s' isn't a valid amount", str);
 
-    return num;
+    return number;
 }
 
-static unsigned short
-get_rgb(const char *str, unsigned rgb[3])
+static bool
+convert_to_rgb(const char *str, unsigned rgb[3])
 {
     errno = 0;
     char *ptr;
@@ -50,6 +51,7 @@ get_rgb(const char *str, unsigned rgb[3])
     if (errno != 0 || *ptr != 0)
         return 0;
 
+    /* obtain rgb values from tmp */
     rgb[0] = (tmp >> 16) & 0xFF;
     rgb[1] = (tmp >>  8) & 0xFF;
     rgb[2] = (tmp >>  0) & 0xFF;
@@ -58,8 +60,12 @@ get_rgb(const char *str, unsigned rgb[3])
 }
 
 static void
-make_valid(unsigned *value, long offset)
+make_value_valid(unsigned *value, long offset)
 {
+    /*
+     * out rgb values can only be between 0 and 255
+     * fix values accordingly
+     */
     long tmp = (long)*value + offset;
 
     if (tmp <   0) tmp =   0;
@@ -69,26 +75,28 @@ make_valid(unsigned *value, long offset)
 }
 
 static void
-color(const char *str, const long num[3])
+parse_string(const char *str, const long offsets[3])
 {
-    unsigned rgb[3];
-    char tmp[7] = {0};
+    unsigned rgb[3] = {0};
+    char hex[7] = {0}; /* will contain hex strings */
 
-    size_t len = strnlen(str, LINE_MAX);
+    size_t length = strnlen(str, LINE_MAX);
 
-    for (size_t i = 0; i < len; ++i) {
+    for (size_t i = 0; i < length; ++i) {
         putchar(str[i]);
 
-        if (str[i] == '#' && i + 6 < len) {
+        /* check if we can still fit a hex string */
+        if (str[i] == '#' && i + 6 < length) {
+            /* copy over hex string */
             for (unsigned short j = 0; j < 6; ++j)
-                tmp[j] = str[i + j + 1];
+                hex[j] = str[i + j + 1];
 
-            if (get_rgb(tmp, rgb) != 1)
+            if (convert_to_rgb(hex, rgb) == 0)
                 continue;
 
-            make_valid(&rgb[0], num[0]);
-            make_valid(&rgb[1], num[1]);
-            make_valid(&rgb[2], num[2]);
+            make_value_valid(&rgb[0], offsets[0]);
+            make_value_valid(&rgb[1], offsets[1]);
+            make_value_valid(&rgb[2], offsets[2]);
 
             printf("%02X%02X%02X", rgb[0], rgb[1], rgb[2]);
 
@@ -102,38 +110,40 @@ color(const char *str, const long num[3])
 int
 main(int argc, char **argv)
 {
-    if (argc == 1)
-        usage(argv[0]);
+    if (argc < 2)
+        print_usage(argv[0]);
 
     long tmp;
-    long num[3] = {0};
+    long offsets[3] = {0};
 
+    /* argument parsing */
     for (int arg; (arg = getopt(argc, argv, ":r:g:b:a:")) != -1;)
         switch (arg) {
-            case 'r': num[0] += get_num(optarg); break;
-            case 'g': num[1] += get_num(optarg); break;
-            case 'b': num[2] += get_num(optarg); break;
+            case 'r': offsets[0] += convert_to_number(optarg); break;
+            case 'g': offsets[1] += convert_to_number(optarg); break;
+            case 'b': offsets[2] += convert_to_number(optarg); break;
             case 'a':
-                tmp = get_num(optarg);
+                tmp = convert_to_number(optarg);
 
-                num[0] += tmp;
-                num[1] += tmp;
-                num[2] += tmp;
-
+                offsets[0] += tmp;
+                offsets[1] += tmp;
+                offsets[2] += tmp;
+               
                 break;
-            default: usage(argv[0]);
+            default : print_usage(argv[0]);
         }
 
     if (optind < argc)
         for (unsigned i = optind; i < (unsigned)argc; ++i)
-            color(argv[i], num);
+            parse_string(argv[i], offsets);
     else {
-        char input[LINE_MAX];
+        char line[LINE_MAX] = {0};
 
-        while (fgets(input, LINE_MAX, stdin) != NULL) {
-            input[strnlen(input, LINE_MAX) - 1] = 0;
-
-            color(input, num);
+        while (fgets(line, LINE_MAX, stdin) != NULL) {
+            /* fix string */
+            line[strnlen(line, LINE_MAX) - 1] = 0;
+            
+            parse_string(line, offsets);
         }
     }
 
