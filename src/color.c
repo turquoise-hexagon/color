@@ -128,7 +128,7 @@ main(int argc, char **argv)
                 offsets[0] += tmp;
                 offsets[1] += tmp;
                 offsets[2] += tmp;
-               
+
                 break;
             default : print_usage(argv[0]);
         }
@@ -142,7 +142,7 @@ main(int argc, char **argv)
         while (fgets(line, LINE_MAX, stdin) != NULL) {
             /* fix string */
             line[strnlen(line, LINE_MAX) - 1] = 0;
-            
+
             parse_string(line, offsets);
         }
     }
