@@ -12,7 +12,7 @@ edit colors
 
 synopsis
 --------
-color `[option]` <parameter>
+color [-rgba `<amount>`] `<string>`
 
 description
 -----------
@@ -22,13 +22,13 @@ it allows for changing rgb values & overall brightness
 
 options
 -------
-``-r <amount> <string>``
+-r `<amount>` `<string>`
     change red value of all hex colors in <string> by <amount>
-``-g <amount> <string>``
+-g `<amount>` `<string>`
     change green value of all hex colors in <string> by <amount>
-``-b <amount> <string>``
+-b `<amount>` `<string>`
     change blue value of all hex colors in <string> by <amount>
-``-a <amount> <string>``
+-a `<amount>` `<string>`
     change overall value of all hex colors in <string> by <amount>
 
 example
