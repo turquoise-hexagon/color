@@ -48,9 +48,11 @@ static bool
 convert_to_rgb(const char *str, unsigned rgb[3])
 {
     errno = 0;
-    char *ptr;
 
-    uint32_t hex = strtoul(str, &ptr, 16);
+    char *ptr;
+    uint32_t hex;
+
+    hex = strtoul(str, &ptr, 16);
 
     if (errno != 0 || *ptr != 0)
         return 0;
