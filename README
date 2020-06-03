@@ -5,15 +5,14 @@ color
 usage
 -----
     * program
-        $ ./make.sh
+        $ make
         $ bin/color
     * documentation
-        $ cd doc
-        $ ./make.sh
-        $ man ./color.1.gz
+        $ make
+        $ man doc/color.1.gz
 
 depends on
 ----------
-    * bash
     * docutils
     * gcc
+    * make
