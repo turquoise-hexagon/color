@@ -3,7 +3,11 @@
 cd "${0%/*}"
 
 # check for rst2man
-_() { command -v "$1"; }
+_() {
+    type "$1" &> /dev/null \
+        && echo "$1"       \
+        || return 1
+}
 
 { r2m=$(_ rst2man.py) || r2m=$(_ rst2man); } || {
     echo 'error : install docutils first' >&2
@@ -22,8 +26,7 @@ printf -v rst *.rst
             set -x
             "$r2m" "$rst"
             set +x
-        )
-    )
+        ))
 } |&
     while IFS= read -r line; do
         if [[ $line =~ ^\++\ ([^'set'].*) ]]; then
