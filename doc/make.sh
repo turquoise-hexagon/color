@@ -12,10 +12,21 @@ _() { command -v "$1"; }
 
 printf -v rst *.rst
 
-# trim down manpages
-gzip -9 > "${rst%.rst}.1.gz" < <(
+{
+    gzip -9 > "${rst%.rst}.1.gz" < <(
+        # trim down manpages
+        while IFS= read -r line; do
+            [[ $line =~ ^'.\"' ]] ||
+                printf '%s\n' "$line"
+        done < <(
+            set -x
+            "$r2m" "$rst"
+            set +x
+        )
+    )
+} |&
     while IFS= read -r line; do
-        [[ $line =~ ^'.\"' ]] ||
-            printf '%s\n' "$line"
-    done < <("$r2m" "$rst")
-)
+        if [[ $line =~ ^\++\ ([^'set'].*) ]]; then
+            printf '%s\n' "${BASH_REMATCH[1]}"
+        fi
+    done

@@ -26,6 +26,13 @@ bin=bin/${bin%.c}
 
 mkdir -p bin
 
-set -x
-
-gcc $CFLAGS "$src" -o "$bin"
+{
+    set -x
+    gcc $CFLAGS "$src" -o "$bin"
+    set +x
+} |&
+    while IFS= read -r line; do
+        if [[ $line =~ ^\++\ ([^'set'].*) ]]; then
+            printf '%s\n' "${BASH_REMATCH[1]}"
+        fi
+    done
