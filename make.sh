@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-# check for gcc
-type gcc &> /dev/null || {
-    echo 'error : install gcc first' >&2
+CC=${CC:-gcc}
+CFLAGS="-pedantic -Wall -Wextra -O2 $CFLAGS"
+
+# check for compiler
+type "$CC" &> /dev/null || {
+    echo "error : install $CC first" >&2
     exit 1
 }
-
-# gcc flags
-CFLAGS=" -pedantic -Wall -Wextra -O2 $CFLAGS"
 
 printf -v src src/*.c
 
@@ -16,19 +16,19 @@ bin=bin/${bin%.c}
 
 [[ -e $bin ]] && {
     {
-        read -r a
-        read -r b
+        read -r time_src
+        read -r time_bin
     } < \
         <(stat -c '%Y' -- "$src" "$bin")
 
-    ((a > b)) || exit 0
+    ((time_src > time_bin)) || exit 0
 }
 
 mkdir -p bin
 
 {
     set -x
-    gcc $CFLAGS "$src" -o "$bin"
+    $CC $CFLAGS "$src" -o "$bin"
     set +x
 } |&
     while IFS= read -r line; do
