@@ -6,10 +6,11 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdnoreturn.h>
 #include <string.h>
 #include <unistd.h>
 
-static void
+static noreturn void
 usage(char *name)
 {
     fprintf(
@@ -50,7 +51,7 @@ convert_to_rgb(const char *str, unsigned rgb[3])
     errno = 0;
 
     char *ptr;
-    uint32_t hex;
+    uint64_t hex;
 
     hex = strtoul(str, &ptr, 16);
 
@@ -77,7 +78,7 @@ make_valid_value(unsigned *value, long offset)
     if (new_value <   0) new_value =   0;
     if (new_value > 255) new_value = 255;
 
-    *value = new_value;
+    *value = (unsigned)new_value;
 }
 
 /*
