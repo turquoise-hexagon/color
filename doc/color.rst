@@ -16,20 +16,20 @@ color [-rgba `<amount>`] `<string>`
 
 description
 -----------
-colors edits colors passed to it as hexadecimal values
+colors edits colors passed to it as hex codes
 
 it allows for changing rgb values & overall brightness
 
 options
 -------
 -r `<amount>` `<string>`
-    change red value of all hex colors in <string> by <amount>
+    change red value of all hex color codes in <string> by <amount>
 -g `<amount>` `<string>`
-    change green value of all hex colors in <string> by <amount>
+    change green value of all hex color codes in <string> by <amount>
 -b `<amount>` `<string>`
-    change blue value of all hex colors in <string> by <amount>
+    change blue value of all hex color codes in <string> by <amount>
 -a `<amount>` `<string>`
-    change overall value of all hex colors in <string> by <amount>
+    change overall value of all hex color codes in <string> by <amount>
 
 example
 -------
