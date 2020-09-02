@@ -16,7 +16,7 @@ color [-rgba `<amount>`] `<string>`
 
 description
 -----------
-colors edits colors passed to it as hex codes
+color edits colors passed to it as hex codes
 
 it allows for changing rgb values & overall brightness
 
