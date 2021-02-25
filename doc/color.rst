@@ -5,39 +5,26 @@ color
 edit colors
 ===========
 
-:date: April 2020
+:date: February 2021
 :version: 0.0
 :manual section: 1
 :manual group: General Commands Manual
 
 synopsis
 --------
-color [-rgba `<amount>`] `<string>`
+`<input>` | color [-rgbcmykhsl `<value>`]
 
 description
 -----------
-color edits colors passed to it as hex codes
+color edits all colors passed to it as hex codes
 
-it allows for changing rgb values & overall brightness
-
-options
--------
--r `<amount>` `<string>`
-    change red value of all hex color codes in <string> by <amount>
--g `<amount>` `<string>`
-    change green value of all hex color codes in <string> by <amount>
--b `<amount>` `<string>`
-    change blue value of all hex color codes in <string> by <amount>
--a `<amount>` `<string>`
-    change overall value of all hex color codes in <string> by <amount>
+it allows for editing rgb, cmyk and hsl values
 
 example
 -------
 ::
 
-    $ color -r 100 -g -100 '#021B21'
+    $ echo '#021b21' | color -r 100 -g -100
     #660021
-    $ color -a 100 '#021B21'
-    #667F85
-    $ echo '#021B21' | color -r 100 -g 100 -b 100
-    #667F85
+    $ echo '#C9647E' | color -l 0.1 -s -0.1
+    #ce92a1

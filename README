@@ -9,10 +9,11 @@ usage
         $ bin/color
     * documentation
         $ make
-        $ man doc/color.1.gz
+        $ man bin/color.1.gz
 
 depends on
 ----------
+    * bash
+    * chicken
     * docutils
-    * gcc
     * make

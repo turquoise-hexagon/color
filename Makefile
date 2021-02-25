@@ -1,10 +1,10 @@
-CC     ?= gcc
-R2M    ?= rst2man.py
-CFLAGS += -pedantic -Wall -Wextra
+CSC      ?= csc
+R2M      ?= rst2man.py
+CSCFLAGS += -static
 
 NAME = color
 BIN  = bin/$(NAME)
-MAN  = doc/$(NAME).1.gz
+MAN  = bin/$(NAME).1.gz
 
 PREFIX ?= $(DESTDIR)/usr
 BINDIR  = $(PREFIX)/bin
@@ -12,23 +12,23 @@ MANDIR  = $(PREFIX)/share/man/man1
 
 all : $(BIN) $(MAN)
 
-bin/% : src/%.c
+bin/% : src/%.scm
 	@mkdir -p bin
-	$(CC) $(CFLAGS) $< -o $@
+	CSC='$(CSC)' CSCFLAGS='$(CSCFLAGS)' ./make.sh $< $@
+	@rm -f bin/*.link
 
-doc/%.1.gz : doc/%.rst
+bin/%.1.gz : doc/%.rst
 	$(R2M) $< | gzip -9 > $@
 
 clean :
-	rm -rf bin
-	rm -f doc/*.1.gz
+	rm -rf bin eggs
 
 install : all
 	install -Dm755 $(BIN) -t $(BINDIR)
 	install -Dm644 $(MAN) -t $(MANDIR)
 
 uninstall :
-	rm -f $(BINDIR)/$(NAME)
-	rm -f $(MANDIR)/$(NAME).1.gz
+	rm -f $(BINDIR)/$(basename $(BIN))
+	rm -f $(MANDIR)/$(basename $(MAN))
 
-.PHONY : all clean install uninstall
+.PHONY: all clean install uninstall
