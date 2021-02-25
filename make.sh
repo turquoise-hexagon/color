@@ -7,11 +7,11 @@ set -e
 
 mapfile -t eggs < eggs.txt
 
-mkdir -p        "$DIR"
+mkdir -p "$DIR"
 cp "$INSTALL"/* "$DIR"
 
 export CHICKEN_INSTALL_REPOSITORY=$DIR
-export    CHICKEN_REPOSITORY_PATH=$DIR
+export CHICKEN_REPOSITORY_PATH=$DIR
 
 chicken-install "${eggs[@]}" > /dev/null
 
