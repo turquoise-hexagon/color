@@ -2,6 +2,7 @@
         (chicken irregex)
         (chicken pathname)
         (chicken process-context)
+        (chicken port)
         (chicken string)
         (format)
         (matchable)
@@ -11,16 +12,18 @@
 ;; general functions
 ;; ---
 
-(define (errx . msg)
-  (format (current-error-port) (apply format msg))
-  (exit 1))
+(define (error-message status . args)
+  (with-output-to-port (current-output-port)
+    (lambda () (apply print args)))
+  (exit status))
 
 (define (usage)
-  (errx "usage : ~a [-rgbcmykhsl <value>]\n" (pathname-file (program-name))))
+  (error-message 1 "usage : " (pathname-file (program-name)) " [-rgbcmykhsl <value>]"))
 
 (define (convert str)
   (let ((tmp (string->number str)))
-    (if tmp tmp (errx "error : '~a' isn't a valid value\n" str))))
+    (if tmp tmp
+        (error-message 1 "error : '" str "' isn't a valid value"))))
 
 (define (fp->integer fp)
   (inexact->exact (round fp)))
