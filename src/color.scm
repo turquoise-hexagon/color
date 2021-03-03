@@ -195,4 +195,4 @@
          (list   r g b)
          (list c m y k)
          (list   h s l)))
-      ((_) (usage)))))
+      (_ (usage)))))
