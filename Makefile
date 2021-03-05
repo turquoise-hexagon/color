@@ -1,6 +1,6 @@
 CSC      ?= csc
 R2M      ?= rst2man.py
-CSCFLAGS += -static
+CSCFLAGS += -static -O3
 
 NAME = color
 BIN  = bin/$(NAME)
