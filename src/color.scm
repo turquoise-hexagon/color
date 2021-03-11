@@ -20,11 +20,6 @@
 (define (usage)
   (error-message 1 "usage : " (pathname-file (program-name)) " [-rgbcmykhsl <value>]"))
 
-(define (convert str)
-  (let ((tmp (string->number str)))
-    (if tmp tmp
-        (error-message 1 "error : '" str "' isn't a valid value"))))
-
 (define (fp->integer fp)
   (inexact->exact (round fp)))
 
@@ -172,23 +167,29 @@
 ;; argument parsing
 ;; ---
 
+(define-syntax incr-arg!
+  (syntax-rules ()
+    ((_ var val)
+     (let ((tmp (string->number val)))
+       (if tmp (set! var (+ var tmp))
+           (error-message 1 "error : '" val "' isn't a valid value"))))))
+
 (let ((r 0) (g 0) (b 0) (c 0) (m 0) (y 0) (k 0) (h 0) (s 0) (l 0))
   (let main ((args (command-line-arguments)))
     (match args
       ((arg value . tail)
-       (let ((value (convert value)))
-         (case (string->symbol arg)
-           ((-r) (set! r (+ r value)))
-           ((-g) (set! g (+ g value)))
-           ((-b) (set! b (+ b value)))
-           ((-c) (set! c (+ c value)))
-           ((-m) (set! m (+ m value)))
-           ((-y) (set! y (+ y value)))
-           ((-k) (set! k (+ k value)))
-           ((-h) (set! h (+ h value)))
-           ((-s) (set! s (+ s value)))
-           ((-l) (set! l (+ l value)))
-           (else (usage))))
+       (case (string->symbol arg)
+         ((-r) (incr-arg! r value))
+         ((-g) (incr-arg! g value))
+         ((-b) (incr-arg! b value))
+         ((-c) (incr-arg! c value))
+         ((-m) (incr-arg! m value))
+         ((-y) (incr-arg! y value))
+         ((-k) (incr-arg! k value))
+         ((-h) (incr-arg! h value))
+         ((-s) (incr-arg! s value))
+         ((-l) (incr-arg! l value))
+         (else (usage)))
        (main tail))
       (()
        (edit-input
