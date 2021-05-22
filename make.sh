@@ -10,9 +10,10 @@ mapfile -t eggs < eggs.txt
 mkdir -p "$DIR"
 cp "$INSTALL"/* "$DIR"
 
-export CHICKEN_INSTALL_REPOSITORY=$DIR
-export CHICKEN_REPOSITORY_PATH=$DIR
+export CHICKEN_INSTALL_REPOSITORY=$DIR \
+       CHICKEN_REPOSITORY_PATH=$DIR    \
+       CHICKEN_EGG_CACHE=$DIR
 
-chicken-install "${eggs[@]}" > /dev/null
+chicken-install "${eggs[@]}"
 
 $CSC $CSCFLAGS "$1" -o "$2"
