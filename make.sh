@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 readonly DIR=$PWD/eggs
-readonly INSTALL=$(csi -R 'chicken.platform' -p '(installation-repository)')
+readonly INSTALL=$(chicken-install -repository)
 
 set -e
 
