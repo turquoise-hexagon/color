@@ -22,6 +22,7 @@ bin/% : src/%.scm
 	@rm -f bin/*.link
 
 bin/%.1.gz : doc/%.rst
+	@mkdir -p bin
 	$(R2M) $< | gzip -9 > $@
 
 clean :
