@@ -5,8 +5,7 @@
         (chicken port)
         (chicken string)
         (format)
-        (matchable)
-        (mathh))
+        (matchable))
 
 ;; ---
 ;; general functions
@@ -22,6 +21,9 @@
 
 (define (fp->integer fp)
   (inexact->exact (round fp)))
+
+(define (fpmod n m)
+  (- n (* (floor (/ n m)) m)))
 
 (define (edit a b)
   (map (cut + <> <>) a b))
